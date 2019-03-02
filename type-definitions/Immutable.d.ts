@@ -955,7 +955,7 @@ declare module Immutable {
      * Note: `update(key)` can be used in `withMutations`.
      */
     update(key: K, notSetValue: V, updater: (value: V) => V): this;
-    update(key: K, updater: (value: V) => V): this;
+    update(key: K, updater: (value: V | undefined) => V): this;
     update<R>(updater: (value: this) => R): R;
 
     /**
@@ -3434,8 +3434,7 @@ declare module Immutable {
        * `index` may be a negative number, which indexes back from the end of the
        * Collection. `s.get(-1)` gets the last item in the Collection.
        */
-      get<NSV>(index: number, notSetValue: NSV): T | NSV;
-      get(index: number): T | undefined;
+      get<NSV = undefined>(index: number, notSetValue?: NSV): T | NSV;
 
 
       // Conversion to Seq
@@ -3855,8 +3854,7 @@ declare module Immutable {
      * so if `notSetValue` is not provided and this method returns `undefined`,
      * that does not guarantee the key was not found.
      */
-    get<NSV>(key: K, notSetValue: NSV): V | NSV;
-    get(key: K): V | undefined;
+    get<NSV = undefined>(key: K, notSetValue?: NSV): V | NSV;
 
     /**
      * True if a key exists within this `Collection`, using `Immutable.is`
@@ -3878,7 +3876,7 @@ declare module Immutable {
      * In case the `Collection` is empty returns the optional default
      * value if provided, if no default value is provided returns undefined.
      */
-    first<NSV>(notSetValue?: NSV): V | NSV;
+    first<NSV = undefined>(notSetValue?: NSV): V | NSV;
 
     /**
      * In case the `Collection` is not empty returns the last element of the
@@ -3886,7 +3884,7 @@ declare module Immutable {
      * In case the `Collection` is empty returns the optional default
      * value if provided, if no default value is provided returns undefined.
      */
-    last<NSV>(notSetValue?: NSV): V | NSV;
+    last<NSV = undefined>(notSetValue?: NSV): V | NSV;
 
     // Reading deep values
 
@@ -4580,9 +4578,13 @@ declare module Immutable {
      */
     find(
       predicate: (value: V, key: K, iter: this) => boolean,
-      context?: unknown,
-      notSetValue?: V
+      context?: unknown
     ): V | undefined;
+    find(
+      predicate: (value: V, key: K, iter: this) => boolean,
+      context: unknown | undefined,
+      notSetValue: V
+    ): V;
 
     /**
      * Returns the last value for which the `predicate` returns true.
@@ -4591,18 +4593,26 @@ declare module Immutable {
      */
     findLast(
       predicate: (value: V, key: K, iter: this) => boolean,
-      context?: unknown,
-      notSetValue?: V
+      context?: unknown
     ): V | undefined;
+    findLast(
+      predicate: (value: V, key: K, iter: this) => boolean,
+      context: unknown | undefined,
+      notSetValue: V
+    ): V;
 
     /**
      * Returns the first [key, value] entry for which the `predicate` returns true.
      */
     findEntry(
       predicate: (value: V, key: K, iter: this) => boolean,
-      context?: unknown,
-      notSetValue?: V
+      context?: unknown
     ): [K, V] | undefined;
+    findEntry(
+      predicate: (value: V, key: K, iter: this) => boolean,
+      context: unknown | undefined,
+      notSetValue: V
+    ): [K, V];
 
     /**
      * Returns the last [key, value] entry for which the `predicate`
@@ -4612,9 +4622,13 @@ declare module Immutable {
      */
     findLastEntry(
       predicate: (value: V, key: K, iter: this) => boolean,
-      context?: unknown,
-      notSetValue?: V
+      context?: unknown
     ): [K, V] | undefined;
+    findLastEntry(
+      predicate: (value: V, key: K, iter: this) => boolean,
+      context: unknown | undefined,
+      notSetValue: V
+    ): [K, V];
 
     /**
      * Returns the key for which the `predicate` returns true.
@@ -5057,14 +5071,11 @@ declare module Immutable {
    * get({ x: 123, y: 456 }, 'z', 'ifNotSet') // 'ifNotSet'
    * ```
    */
-  export function get<K, V>(collection: Collection<K, V>, key: K): V | undefined;
-  export function get<K, V, NSV>(collection: Collection<K, V>, key: K, notSetValue: NSV): V | NSV;
+  export function get<K, V, NSV = undefined>(collection: Collection<K, V>, key: K, notSetValue?: NSV): V | NSV;
   export function get<TProps, K extends keyof TProps>(record: Record<TProps>, key: K, notSetValue: unknown): TProps[K];
-  export function get<V>(collection: Array<V>, key: number): V | undefined;
-  export function get<V, NSV>(collection: Array<V>, key: number, notSetValue: NSV): V | NSV;
+  export function get<V, NSV = undefined>(collection: Array<V>, key: number, notSetValue?: NSV): V | NSV;
   export function get<C extends Object, K extends keyof C>(object: C, key: K, notSetValue: unknown): C[K];
-  export function get<V>(collection: {[key: string]: V}, key: string): V | undefined;
-  export function get<V, NSV>(collection: {[key: string]: V}, key: string, notSetValue: NSV): V | NSV;
+  export function get<V, NSV = undefined>(collection: {[key: string]: V}, key: string, notSetValue?: NSV): V | NSV;
 
   /**
    * Returns true if the key is defined in the provided collection.
